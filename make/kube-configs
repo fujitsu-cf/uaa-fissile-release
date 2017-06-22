@@ -3,17 +3,31 @@
 set -o errexit -o nounset
 
 GIT_ROOT=${GIT_ROOT:-$(git rev-parse --show-toplevel)}
+cd "${GIT_ROOT}"
+
+ENV_FILES="$(echo env/*.env)"
+
+CREATE_HELM_CHART=false
+KUBE_OUTPUT_DIR=kube
+
+if [ "${1:-}" = "helm" ]; then
+    CREATE_HELM_CHART=true
+    KUBE_OUTPUT_DIR=helm
+    ENV_FILES=env/certs.env
+fi
 
 # TODO: We currently skip memory limits for development purposes
 
-. "${GIT_ROOT}/make/include/registry"
+source make/include/registry
 
-cd "$GIT_ROOT"
-. ${GIT_ROOT}/.envrc
+source .envrc
+rm -rf ${KUBE_OUTPUT_DIR}
 fissile build kube \
-    --kube-output-dir="${GIT_ROOT}/kube" \
-    --defaults-file="$(echo env/*.env | tr ' ' ',')" \
+    --kube-output-dir="${KUBE_OUTPUT_DIR}" \
+    --defaults-file="$(echo "${ENV_FILES}" | tr ' ' ,)" \
     --use-memory-limits=false \
+    --create-helm-chart=${CREATE_HELM_CHART} \
+    --chart-file=Chart.yaml \
     --docker-registry "${IMAGE_REGISTRY}" \
     --docker-organization "${IMAGE_ORG}" \
     --repository "${IMAGE_PREFIX}"

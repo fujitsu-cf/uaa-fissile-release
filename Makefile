@@ -15,6 +15,9 @@ images:
 kube-configs kube/bosh/uaa.yml:
 	${GIT_ROOT}/make/kube-configs
 
+helm-chart:
+	${GIT_ROOT}/make/kube-configs helm
+
 package-kube:
 	${GIT_ROOT}/make/package-kube
 
