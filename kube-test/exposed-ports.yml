@@ -11,6 +11,6 @@ spec:
     port: 2793
     targetPort: uaa-ssl
   externalIPs :
-  - 192.168.77.77
+  - 10.0.0.4
   selector:
     skiff-role-name: uaa
