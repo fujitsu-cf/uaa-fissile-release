@@ -52,4 +52,14 @@ echo -e "${setup_patch_wsrep_sst_xtrabackup}" | patch --force
 
 touch "${SENTINEL}"
 
+if [ $HOSTNAME = "mysql-0" ]; then
+	if [ ! -f /var/vcap/store/mysql/state.txt ]; then
+                sed -i'' '/<% cluster_ips.each do |ip| %>/{N;N;d;}' /var/vcap/jobs-src/mysql/templates/mariadb_ctl_config.yml.erb
+		sed -i'' '/ClusterIps:/a\  - mysql.uaa.svc.cluster.local\' /var/vcap/jobs-src/mysql/templates/mariadb_ctl_config.yml.erb
+	else
+		rm /var/vcap/store/mysql/state.txt
+        fi
+
+fi
+
 exit 0

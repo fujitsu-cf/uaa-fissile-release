@@ -70,10 +70,10 @@ roles:
   configuration:
     templates:
       properties.cf_mysql.external_host: "((DOMAIN))"
-      properties.cf_mysql.mysql.advertise_host: mysql-((HCP_COMPONENT_INDEX)).mysql-pod
+      properties.cf_mysql.mysql.advertise_host: '((HOSTNAME)).mysql-pod'
       properties.cf_mysql.mysql.admin_password: "((MYSQL_ADMIN_PASSWORD))"
       properties.cf_mysql.mysql.cluster_health.password: '((MYSQL_CLUSTER_HEALTH_PASSWORD))'
-      properties.cf_mysql.mysql.cluster_ips: '((MYSQL_HCF_CLUSTER_IPS))((#MYSQL_HCF_CLUSTER_CONFIG_REVISION))((/MYSQL_HCF_CLUSTER_CONFIG_REVISION))'
+      properties.cf_mysql.mysql.cluster_ips: '["mysql-0.mysql-pod.uaa.svc.cluster.local", "mysql-1.mysql-pod.uaa.svc.cluster.local", "mysql-2.mysql-pod.uaa.svc.cluster.local"]'
       properties.cf_mysql.mysql.galera_healthcheck.db_password: "((MYSQL_ADMIN_PASSWORD))"
       properties.cf_mysql.mysql.galera_healthcheck.endpoint_password: "((MYSQL_GALERA_HEALTHCHECK_ENDPOINT_PASSWORD))"
       properties.cf_mysql.mysql.seeded_databases: '[{"name":"uaadb", "username": "uaaadmin", "password":"((UAADB_PASSWORD))"}]'
@@ -127,9 +127,9 @@ configuration:
     description: >
       Base domain name of the UAA endpoint; `uaa.${DOMAIN}` must be correctly
       configured to point to this UAA instance
-  - name: HCP_COMPONENT_INDEX
-    type: environment
   - name: HCP_SERVICE_DOMAIN_SUFFIX
+  - name: HOSTNAME
+    type: environment
   - name: JWT_SIGNING_PEM
   - name: KUBERNETES_NAMESPACE
     type: environment
@@ -160,12 +160,6 @@ configuration:
       type: Password
     description: The password used to contact the sidecar endpoints via Basic Auth.
     required: true
-  - name: MYSQL_HCF_CLUSTER_CONFIG_REVISION
-    default: 0
-    description: An indicator to increment when changing the number of MySQL hosts in the cluster, to properly trigger component restarts.
-    required: true
-  - name: MYSQL_HCF_CLUSTER_IPS
-    type: environment
   - name: SAML_SERVICEPROVIDER_CERT
     secret: true
     generator:
